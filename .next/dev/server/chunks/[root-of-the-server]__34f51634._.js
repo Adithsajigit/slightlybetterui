@@ -364,36 +364,70 @@ async function POST(request) {
         // Server-side environment variables
         const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
         const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
+        console.log('🔍 Airtable Config Check:');
+        console.log('  - Base ID:', AIRTABLE_BASE_ID ? `${AIRTABLE_BASE_ID.substring(0, 10)}...` : 'MISSING');
+        console.log('  - PAT Token:', AIRTABLE_PAT ? `${AIRTABLE_PAT.substring(0, 15)}...` : 'MISSING');
         // 1. SAVE TO AIRTABLE
         // We proceed with Airtable logic first to ensure data is safe.
         let orderRecordId = "PENDING-" + Date.now();
         if (AIRTABLE_BASE_ID && AIRTABLE_PAT) {
-            // 1. CREATE THE PARENT ORDER RECORD
-            const orderRecordFields = {
-                "Customer Name": customer.name,
-                "Company Name": customer.companyName,
-                "Email": customer.email,
-                "Phone": customer.phone,
-                "Address": customer.address,
-                "Total Weight": summary.totalWeight,
-                "Total Price": summary.subtotal,
-                "Tier Applied": summary.tier,
-                "Order JSON": JSON.stringify(summary.items)
-            };
-            const orderResponse = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Orders`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${AIRTABLE_PAT}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    fields: orderRecordFields
-                })
-            });
-            if (orderResponse.ok) {
+            try {
+                console.log('📤 Attempting to save order to Airtable...');
+                // Convert tier to Airtable format
+                const tierMapping = {
+                    'Silver': 'Silver Tier (100-249 kg)',
+                    'Gold': 'Gold Tier (250-499 kg)',
+                    'Platinum': 'Platinum Tier (500-999 kg)',
+                    'Diamond': 'Diamond Tier (1000+ kg)',
+                    'Base': 'Below Minimum (Need 100kg minimum)'
+                };
+                const airtableTier = tierMapping[summary.tier] || summary.tier;
+                // 1. CREATE THE PARENT ORDER RECORD
+                const orderRecordFields = {
+                    "Customer Name": customer.name,
+                    "Company Name": customer.companyName,
+                    "Email": customer.email,
+                    "Phone": customer.phone,
+                    "Address": customer.address,
+                    "Total Weight": summary.totalWeight,
+                    "Total Price": summary.subtotal,
+                    "Tier Applied": airtableTier,
+                    "Order JSON": JSON.stringify(summary.items)
+                };
+                console.log('📝 Order data:', {
+                    customer: customer.name,
+                    weight: summary.totalWeight,
+                    total: summary.subtotal,
+                    tier: summary.tier
+                });
+                const orderResponse = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_PAT}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fields: orderRecordFields
+                    })
+                });
+                console.log('📡 Airtable Order Response Status:', orderResponse.status, orderResponse.statusText);
+                if (!orderResponse.ok) {
+                    const errorText = await orderResponse.text();
+                    console.error('❌ Airtable Order Error:', errorText);
+                    throw new Error(`Airtable order creation failed: ${orderResponse.status} - ${errorText}`);
+                }
                 const orderJson = await orderResponse.json();
                 orderRecordId = orderJson.id; // Real ID from Airtable
+                console.log('✅ Order saved to Airtable:', orderRecordId);
                 // 2. CREATE THE CHILD ITEM RECORDS
+                // Map preparation values to match Airtable options
+                const preparationMapping = {
+                    'Whole': 'Fresh - Whole',
+                    'Cleaned': 'Cleaned',
+                    'Skinned': 'Skinned',
+                    'Filleted': 'Filleted',
+                    'Steaks': 'Steaks'
+                };
                 const itemsPayload = summary.items.map((item)=>({
                         fields: {
                             "Order Link": [
@@ -401,17 +435,21 @@ async function POST(request) {
                             ],
                             "Product Name": item.product.englishName,
                             "Code": item.product.code,
-                            "Preparation": item.product.preparation,
+                            "Preparation": preparationMapping[item.product.preparation] || item.product.preparation,
                             "Packaging": item.product.packaging,
                             "Quantity KG": item.quantity,
                             "Price Per KG": item.price,
                             "Line Total": item.lineTotal
                         }
                     }));
+                console.log(`📦 Creating ${itemsPayload.length} order items...`);
+                console.log('📋 Sample item payload:', JSON.stringify(itemsPayload[0], null, 2));
                 const chunkSize = 10;
+                let totalItemsSaved = 0;
                 for(let i = 0; i < itemsPayload.length; i += chunkSize){
                     const chunk = itemsPayload.slice(i, i + chunkSize);
-                    await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Order Items`, {
+                    console.log(`📤 Sending chunk ${Math.floor(i / chunkSize) + 1} with ${chunk.length} items...`);
+                    const itemsResponse = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/Order Items`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${AIRTABLE_PAT}`,
@@ -421,8 +459,24 @@ async function POST(request) {
                             records: chunk
                         })
                     });
+                    console.log(`📡 Items Response Status: ${itemsResponse.status} ${itemsResponse.statusText}`);
+                    if (!itemsResponse.ok) {
+                        const errorText = await itemsResponse.text();
+                        console.error('❌ Airtable Items Error:', errorText);
+                        console.error('❌ Failed chunk data:', JSON.stringify(chunk, null, 2));
+                    } else {
+                        const itemsJson = await itemsResponse.json();
+                        totalItemsSaved += itemsJson.records.length;
+                        console.log(`✅ Saved ${itemsJson.records.length} items to Airtable`);
+                    }
                 }
+                console.log(`✅ All order items processed: ${totalItemsSaved}/${itemsPayload.length} saved successfully`);
+            } catch (airtableError) {
+                console.error('❌ Airtable Error:', airtableError);
+            // Continue with email even if Airtable fails
             }
+        } else {
+            console.log('⚠️ Airtable not configured - skipping save');
         }
         // 2. SEND EMAIL CONFIRMATION (NODEMAILER)
         // Check if SMTP env vars are present
