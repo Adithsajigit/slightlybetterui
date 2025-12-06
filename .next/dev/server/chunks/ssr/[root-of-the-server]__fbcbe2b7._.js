@@ -1267,6 +1267,7 @@ const ProductCard = ({ product })=>{
                 return product.priceSilver; // Default/Start price
         }
     };
+    0;
     const price = getCurrentPrice();
     const formatPrice = (p)=>new Intl.NumberFormat('en-GB', {
             style: 'currency',
