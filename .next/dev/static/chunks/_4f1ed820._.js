@@ -1324,7 +1324,13 @@ const ProductCard = ({ product })=>{
         const val = e.target.value;
         setInputValue(val);
         const numVal = parseFloat(val);
+        // Enforce minimum 10kg per product rule
         if (!isNaN(numVal) && numVal > 0) {
+            if (numVal < 10) {
+                // Show validation message but don't update cart yet
+                // Important: Don't add to cart for ANY value below 10kg
+                return;
+            }
             if (cartItem) {
                 updateQuantity(product.id, numVal);
             } else {
@@ -1337,20 +1343,39 @@ const ProductCard = ({ product })=>{
         }
     };
     const handleBlur = ()=>{
+        const numVal = parseFloat(inputValue);
+        // On blur, enforce minimum 10kg rule
+        if (inputValue !== '' && !isNaN(numVal)) {
+            if (numVal < 10) {
+                // Clear invalid input on blur
+                setInputValue('');
+                if (cartItem) {
+                    removeFromCart(product.id);
+                }
+                return;
+            }
+        }
         if (inputValue === '' || parseFloat(inputValue) === 0) {
             setInputValue('');
+            if (cartItem) {
+                removeFromCart(product.id);
+            }
         }
     };
+    // Check if current input violates 10kg minimum (while still typing)
+    const inputNum = parseFloat(inputValue);
+    const hasInvalidInput = inputValue !== '' && !isNaN(inputNum) && inputNum > 0 && inputNum < 10;
+    const isValidQuantity = cartItem && cartItem.quantity >= 10;
     const isWhole = product.preparation.toLowerCase() === 'whole';
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
-        className: `hover:bg-yellow-50 transition-colors ${currentQty > 0 ? 'bg-yellow-100' : 'bg-white'}`,
+        className: `hover:bg-yellow-50 transition-colors ${hasInvalidInput ? 'bg-red-50' : currentQty > 0 ? 'bg-yellow-100' : 'bg-white'}`,
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                 className: "p-3 border-r border-slate-300 text-sm font-mono text-slate-500",
                 children: product.code.split('/')[0]
             }, void 0, false, {
                 fileName: "[project]/components/ProductCard.tsx",
-                lineNumber: 66,
+                lineNumber: 95,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1361,7 +1386,7 @@ const ProductCard = ({ product })=>{
                         children: product.englishName
                     }, void 0, false, {
                         fileName: "[project]/components/ProductCard.tsx",
-                        lineNumber: 72,
+                        lineNumber: 101,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1369,7 +1394,7 @@ const ProductCard = ({ product })=>{
                         children: product.malayalamName
                     }, void 0, false, {
                         fileName: "[project]/components/ProductCard.tsx",
-                        lineNumber: 73,
+                        lineNumber: 102,
                         columnNumber: 9
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1377,13 +1402,21 @@ const ProductCard = ({ product })=>{
                         children: product.sizeSpec
                     }, void 0, false, {
                         fileName: "[project]/components/ProductCard.tsx",
-                        lineNumber: 74,
+                        lineNumber: 103,
                         columnNumber: 9
+                    }, ("TURBOPACK compile-time value", void 0)),
+                    hasInvalidInput && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "text-xs text-red-600 font-bold mt-1 bg-red-50 px-2 py-1 rounded inline-block",
+                        children: "⚠️ Minimum 10kg required"
+                    }, void 0, false, {
+                        fileName: "[project]/components/ProductCard.tsx",
+                        lineNumber: 105,
+                        columnNumber: 11
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/ProductCard.tsx",
-                lineNumber: 71,
+                lineNumber: 100,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1393,12 +1426,12 @@ const ProductCard = ({ product })=>{
                     children: product.preparation
                 }, void 0, false, {
                     fileName: "[project]/components/ProductCard.tsx",
-                    lineNumber: 79,
+                    lineNumber: 113,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/components/ProductCard.tsx",
-                lineNumber: 78,
+                lineNumber: 112,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1408,18 +1441,18 @@ const ProductCard = ({ product })=>{
                     children: formatPrice(price)
                 }, void 0, false, {
                     fileName: "[project]/components/ProductCard.tsx",
-                    lineNumber: 90,
+                    lineNumber: 124,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/components/ProductCard.tsx",
-                lineNumber: 89,
+                lineNumber: 123,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                 className: "p-2",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                    className: "flex items-center bg-white border-2 border-slate-300 rounded focus-within:border-slate-800 focus-within:ring-2 focus-within:ring-slate-200",
+                    className: `flex items-center rounded focus-within:ring-2 focus-within:ring-slate-200 border-2 ${hasInvalidInput ? 'border-red-500 bg-red-50' : 'bg-white border-slate-300 focus-within:border-slate-800'}`,
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                             type: "number",
@@ -1432,7 +1465,7 @@ const ProductCard = ({ product })=>{
                             className: "w-full p-2 text-right text-xl font-bold text-slate-900 outline-none bg-transparent"
                         }, void 0, false, {
                             fileName: "[project]/components/ProductCard.tsx",
-                            lineNumber: 96,
+                            lineNumber: 130,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1440,24 +1473,24 @@ const ProductCard = ({ product })=>{
                             children: "KG"
                         }, void 0, false, {
                             fileName: "[project]/components/ProductCard.tsx",
-                            lineNumber: 106,
+                            lineNumber: 140,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/ProductCard.tsx",
-                    lineNumber: 95,
+                    lineNumber: 129,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/components/ProductCard.tsx",
-                lineNumber: 94,
+                lineNumber: 128,
                 columnNumber: 7
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/components/ProductCard.tsx",
-        lineNumber: 64,
+        lineNumber: 93,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -1994,6 +2027,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
     const { summary, clearCart } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CartContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCart"])();
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [success, setSuccess] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [validationError, setValidationError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
     const [formData, setFormData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])({
         name: '',
         companyName: '',
@@ -2009,6 +2043,19 @@ const CheckoutModal = ({ isOpen, onClose })=>{
     };
     const handleSubmit = async (e)=>{
         e.preventDefault();
+        // Validate minimum 100kg total weight
+        if (summary.totalWeight < 100) {
+            setValidationError(`Order must be at least 100kg. Current: ${summary.totalWeight.toFixed(1)}kg`);
+            return;
+        }
+        // Validate all items are at least 10kg - STRICT CHECK
+        const invalidItems = summary.items.filter((item)=>item.quantity < 10);
+        if (invalidItems.length > 0) {
+            const invalidProductNames = invalidItems.map((item)=>`${item.product.englishName} (${item.quantity}kg)`).join(', ');
+            setValidationError(`❌ INVALID: The following products are below 10kg minimum: ${invalidProductNames}. Please increase their quantities.`);
+            return;
+        }
+        setValidationError('');
         setLoading(true);
         try {
             const result = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$orderService$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["submitOrder"])({
@@ -2041,12 +2088,12 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                             className: "w-8 h-8 text-green-600"
                         }, void 0, false, {
                             fileName: "[project]/components/CheckoutModal.tsx",
-                            lineNumber: 61,
+                            lineNumber: 78,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     }, void 0, false, {
                         fileName: "[project]/components/CheckoutModal.tsx",
-                        lineNumber: 60,
+                        lineNumber: 77,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -2054,7 +2101,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                         children: "Order Received!"
                     }, void 0, false, {
                         fileName: "[project]/components/CheckoutModal.tsx",
-                        lineNumber: 63,
+                        lineNumber: 80,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2068,7 +2115,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/CheckoutModal.tsx",
-                        lineNumber: 64,
+                        lineNumber: 81,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2077,18 +2124,18 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                         children: "Close"
                     }, void 0, false, {
                         fileName: "[project]/components/CheckoutModal.tsx",
-                        lineNumber: 65,
+                        lineNumber: 82,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/CheckoutModal.tsx",
-                lineNumber: 59,
+                lineNumber: 76,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0))
         }, void 0, false, {
             fileName: "[project]/components/CheckoutModal.tsx",
-            lineNumber: 58,
+            lineNumber: 75,
             columnNumber: 9
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -2105,7 +2152,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                             children: "Finalize Order"
                         }, void 0, false, {
                             fileName: "[project]/components/CheckoutModal.tsx",
-                            lineNumber: 80,
+                            lineNumber: 97,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -2115,18 +2162,18 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                 className: "w-6 h-6"
                             }, void 0, false, {
                                 fileName: "[project]/components/CheckoutModal.tsx",
-                                lineNumber: 82,
+                                lineNumber: 99,
                                 columnNumber: 17
                             }, ("TURBOPACK compile-time value", void 0))
                         }, void 0, false, {
                             fileName: "[project]/components/CheckoutModal.tsx",
-                            lineNumber: 81,
+                            lineNumber: 98,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/CheckoutModal.tsx",
-                    lineNumber: 79,
+                    lineNumber: 96,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2142,7 +2189,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                             children: "Order Summary"
                                         }, void 0, false, {
                                             fileName: "[project]/components/CheckoutModal.tsx",
-                                            lineNumber: 89,
+                                            lineNumber: 106,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2155,7 +2202,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                                     children: "|"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                                    lineNumber: 91,
+                                                    lineNumber: 108,
                                                     columnNumber: 61
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 " ",
@@ -2166,13 +2213,13 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/CheckoutModal.tsx",
-                                            lineNumber: 90,
+                                            lineNumber: 107,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                    lineNumber: 88,
+                                    lineNumber: 105,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2185,19 +2232,161 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/components/CheckoutModal.tsx",
-                                        lineNumber: 95,
+                                        lineNumber: 112,
                                         columnNumber: 21
                                     }, ("TURBOPACK compile-time value", void 0))
                                 }, void 0, false, {
                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                    lineNumber: 94,
+                                    lineNumber: 111,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/CheckoutModal.tsx",
-                            lineNumber: 87,
+                            lineNumber: 104,
                             columnNumber: 13
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        summary.totalWeight < 100 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-6",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-red-800 font-bold text-sm",
+                                    children: "⚠️ Minimum Order Requirement Not Met"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                    lineNumber: 118,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-red-700 text-sm mt-1",
+                                    children: [
+                                        "Your order is ",
+                                        summary.totalWeight.toFixed(1),
+                                        " kg. Minimum required: ",
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                            children: "100 kg"
+                                        }, void 0, false, {
+                                            fileName: "[project]/components/CheckoutModal.tsx",
+                                            lineNumber: 120,
+                                            columnNumber: 88
+                                        }, ("TURBOPACK compile-time value", void 0))
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                    lineNumber: 119,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-red-600 text-xs mt-2",
+                                    children: [
+                                        "Add ",
+                                        (100 - summary.totalWeight).toFixed(1),
+                                        " kg more to proceed with checkout."
+                                    ]
+                                }, void 0, true, {
+                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                    lineNumber: 122,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CheckoutModal.tsx",
+                            lineNumber: 117,
+                            columnNumber: 15
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        summary.items.some((item)=>item.quantity < 10) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-red-900 font-bold text-sm",
+                                    children: "🚫 INVALID PRODUCTS - Below 10kg Minimum"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                    lineNumber: 130,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-red-700 text-sm mt-2",
+                                    children: "The following products must be at least 10kg:"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                    lineNumber: 131,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("ul", {
+                                    className: "mt-3 space-y-2",
+                                    children: summary.items.filter((item)=>item.quantity < 10).map((item, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
+                                            className: "text-red-700 text-sm bg-red-100 px-3 py-2 rounded",
+                                            children: [
+                                                "❌ ",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                    children: item.product.englishName
+                                                }, void 0, false, {
+                                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                                    lineNumber: 135,
+                                                    columnNumber: 25
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                " - Currently: ",
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("strong", {
+                                                    children: [
+                                                        item.quantity,
+                                                        "kg"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                                    lineNumber: 135,
+                                                    columnNumber: 82
+                                                }, ("TURBOPACK compile-time value", void 0)),
+                                                " (Need: 10kg minimum)"
+                                            ]
+                                        }, idx, true, {
+                                            fileName: "[project]/components/CheckoutModal.tsx",
+                                            lineNumber: 134,
+                                            columnNumber: 21
+                                        }, ("TURBOPACK compile-time value", void 0)))
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                    lineNumber: 132,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-red-600 text-xs mt-3 italic",
+                                    children: "Go back to the product table and increase these quantities."
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                    lineNumber: 139,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CheckoutModal.tsx",
+                            lineNumber: 129,
+                            columnNumber: 15
+                        }, ("TURBOPACK compile-time value", void 0)),
+                        validationError && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-red-900 font-bold text-sm",
+                                    children: "🚫 SUBMISSION BLOCKED"
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                    lineNumber: 145,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0)),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                    className: "text-red-700 text-sm mt-2",
+                                    children: validationError
+                                }, void 0, false, {
+                                    fileName: "[project]/components/CheckoutModal.tsx",
+                                    lineNumber: 146,
+                                    columnNumber: 17
+                                }, ("TURBOPACK compile-time value", void 0))
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/components/CheckoutModal.tsx",
+                            lineNumber: 144,
+                            columnNumber: 15
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
                             id: "checkoutForm",
@@ -2214,7 +2403,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                                     children: "Contact Name"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                                    lineNumber: 102,
+                                                    lineNumber: 153,
                                                     columnNumber: 25
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2227,13 +2416,13 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                                     placeholder: "John Doe"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                                    lineNumber: 103,
+                                                    lineNumber: 154,
                                                     columnNumber: 25
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/CheckoutModal.tsx",
-                                            lineNumber: 101,
+                                            lineNumber: 152,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2243,7 +2432,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                                     children: "Company Name"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                                    lineNumber: 106,
+                                                    lineNumber: 157,
                                                     columnNumber: 25
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2256,19 +2445,19 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                                     placeholder: "Seafood Ltd"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                                    lineNumber: 107,
+                                                    lineNumber: 158,
                                                     columnNumber: 25
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/CheckoutModal.tsx",
-                                            lineNumber: 105,
+                                            lineNumber: 156,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                    lineNumber: 100,
+                                    lineNumber: 151,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2281,7 +2470,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                                     children: "Email Address"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                                    lineNumber: 112,
+                                                    lineNumber: 163,
                                                     columnNumber: 25
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2294,13 +2483,13 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                                     placeholder: "orders@company.com"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                                    lineNumber: 113,
+                                                    lineNumber: 164,
                                                     columnNumber: 25
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/CheckoutModal.tsx",
-                                            lineNumber: 111,
+                                            lineNumber: 162,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2310,7 +2499,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                                     children: "Phone Number"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                                    lineNumber: 116,
+                                                    lineNumber: 167,
                                                     columnNumber: 25
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -2323,19 +2512,19 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                                     placeholder: "+44 7000 000000"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                                    lineNumber: 117,
+                                                    lineNumber: 168,
                                                     columnNumber: 25
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/components/CheckoutModal.tsx",
-                                            lineNumber: 115,
+                                            lineNumber: 166,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                    lineNumber: 110,
+                                    lineNumber: 161,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2345,7 +2534,7 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                             children: "Delivery Address"
                                         }, void 0, false, {
                                             fileName: "[project]/components/CheckoutModal.tsx",
-                                            lineNumber: 121,
+                                            lineNumber: 172,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
@@ -2358,25 +2547,25 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                                             placeholder: "Unit 4, Ocean Estate..."
                                         }, void 0, false, {
                                             fileName: "[project]/components/CheckoutModal.tsx",
-                                            lineNumber: 122,
+                                            lineNumber: 173,
                                             columnNumber: 21
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                    lineNumber: 120,
+                                    lineNumber: 171,
                                     columnNumber: 17
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/CheckoutModal.tsx",
-                            lineNumber: 99,
+                            lineNumber: 150,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/CheckoutModal.tsx",
-                    lineNumber: 86,
+                    lineNumber: 103,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2389,48 +2578,48 @@ const CheckoutModal = ({ isOpen, onClose })=>{
                             children: "Cancel"
                         }, void 0, false, {
                             fileName: "[project]/components/CheckoutModal.tsx",
-                            lineNumber: 128,
+                            lineNumber: 179,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                             type: "submit",
                             form: "checkoutForm",
-                            disabled: loading,
-                            className: "px-6 py-2 bg-ocean-600 text-white font-bold rounded-lg hover:bg-ocean-700 transition-colors shadow-lg shadow-ocean-500/30 flex items-center gap-2",
+                            disabled: loading || summary.totalWeight < 100 || summary.items.some((item)=>item.quantity < 10) || validationError !== '',
+                            className: `px-6 py-2 font-bold rounded-lg flex items-center gap-2 transition-colors ${summary.totalWeight < 100 || summary.items.some((item)=>item.quantity < 10) || validationError !== '' ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-ocean-600 text-white hover:bg-ocean-700 shadow-lg shadow-ocean-500/30'}`,
                             children: [
                                 loading && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$loader$2d$circle$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Loader2$3e$__["Loader2"], {
                                     className: "w-4 h-4 animate-spin"
                                 }, void 0, false, {
                                     fileName: "[project]/components/CheckoutModal.tsx",
-                                    lineNumber: 137,
+                                    lineNumber: 192,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0)),
-                                loading ? 'Processing...' : 'Submit Order'
+                                loading ? 'Processing...' : summary.totalWeight < 100 ? `Add ${(100 - summary.totalWeight).toFixed(1)} kg` : summary.items.some((item)=>item.quantity < 10) ? 'Fix Products (< 10kg)' : 'Submit Order'
                             ]
                         }, void 0, true, {
                             fileName: "[project]/components/CheckoutModal.tsx",
-                            lineNumber: 131,
+                            lineNumber: 182,
                             columnNumber: 13
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/components/CheckoutModal.tsx",
-                    lineNumber: 127,
+                    lineNumber: 178,
                     columnNumber: 9
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/components/CheckoutModal.tsx",
-            lineNumber: 78,
+            lineNumber: 95,
             columnNumber: 7
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/components/CheckoutModal.tsx",
-        lineNumber: 77,
+        lineNumber: 94,
         columnNumber: 5
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(CheckoutModal, "KkJq/ebAyqn1JVI/jFfs9BE+cd0=", false, function() {
+_s(CheckoutModal, "vRViMlkvwH41jiP5h0SKApYEQds=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CartContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useCart"]
     ];
@@ -2627,7 +2816,7 @@ const FormHeader = ()=>{
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
                     src: "/logo.png",
                     alt: "Kerala Fresh Fish Logo",
-                    className: "h-20 w-20 object-contain",
+                    className: "h-32 w-32 object-contain",
                     style: {
                         backgroundColor: 'white'
                     }

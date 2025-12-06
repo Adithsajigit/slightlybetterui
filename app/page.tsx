@@ -15,7 +15,7 @@ const FormHeader = () => {
         <img 
           src="/logo.png" 
           alt="Kerala Fresh Fish Logo" 
-          className="h-20 w-20 object-contain"
+          className="h-32 w-32 object-contain"
           style={{ backgroundColor: 'white' }}
         />
         <div className="flex-1">

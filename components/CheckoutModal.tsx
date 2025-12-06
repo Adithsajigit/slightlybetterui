@@ -15,6 +15,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
   const { summary, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [validationError, setValidationError] = useState<string>('');
   const [formData, setFormData] = useState<CustomerDetails>({
     name: '',
     companyName: '',
@@ -29,6 +30,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate minimum 100kg total weight
+    if (summary.totalWeight < 100) {
+      setValidationError(`Order must be at least 100kg. Current: ${summary.totalWeight.toFixed(1)}kg`);
+      return;
+    }
+
+    // Validate all items are at least 10kg - STRICT CHECK
+    const invalidItems = summary.items.filter(item => item.quantity < 10);
+    if (invalidItems.length > 0) {
+      const invalidProductNames = invalidItems.map(item => `${item.product.englishName} (${item.quantity}kg)`).join(', ');
+      setValidationError(`❌ INVALID: The following products are below 10kg minimum: ${invalidProductNames}. Please increase their quantities.`);
+      return;
+    }
+
+    setValidationError('');
     setLoading(true);
 
     try {
@@ -96,6 +113,40 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
                 </div>
             </div>
 
+            {summary.totalWeight < 100 && (
+              <div className="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-6">
+                <p className="text-red-800 font-bold text-sm">⚠️ Minimum Order Requirement Not Met</p>
+                <p className="text-red-700 text-sm mt-1">
+                  Your order is {summary.totalWeight.toFixed(1)} kg. Minimum required: <strong>100 kg</strong>
+                </p>
+                <p className="text-red-600 text-xs mt-2">
+                  Add {(100 - summary.totalWeight).toFixed(1)} kg more to proceed with checkout.
+                </p>
+              </div>
+            )}
+
+            {summary.items.some(item => item.quantity < 10) && (
+              <div className="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6">
+                <p className="text-red-900 font-bold text-sm">🚫 INVALID PRODUCTS - Below 10kg Minimum</p>
+                <p className="text-red-700 text-sm mt-2">The following products must be at least 10kg:</p>
+                <ul className="mt-3 space-y-2">
+                  {summary.items.filter(item => item.quantity < 10).map((item, idx) => (
+                    <li key={idx} className="text-red-700 text-sm bg-red-100 px-3 py-2 rounded">
+                      ❌ <strong>{item.product.englishName}</strong> - Currently: <strong>{item.quantity}kg</strong> (Need: 10kg minimum)
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-red-600 text-xs mt-3 italic">Go back to the product table and increase these quantities.</p>
+              </div>
+            )}
+
+            {validationError && (
+              <div className="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6">
+                <p className="text-red-900 font-bold text-sm">🚫 SUBMISSION BLOCKED</p>
+                <p className="text-red-700 text-sm mt-2">{validationError}</p>
+              </div>
+            )}
+
             <form id="checkoutForm" onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -131,11 +182,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose })
             <button 
                 type="submit" 
                 form="checkoutForm"
-                disabled={loading}
-                className="px-6 py-2 bg-ocean-600 text-white font-bold rounded-lg hover:bg-ocean-700 transition-colors shadow-lg shadow-ocean-500/30 flex items-center gap-2"
+                disabled={loading || summary.totalWeight < 100 || summary.items.some(item => item.quantity < 10) || validationError !== ''}
+                className={`px-6 py-2 font-bold rounded-lg flex items-center gap-2 transition-colors ${
+                  summary.totalWeight < 100 || summary.items.some(item => item.quantity < 10) || validationError !== ''
+                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                    : 'bg-ocean-600 text-white hover:bg-ocean-700 shadow-lg shadow-ocean-500/30'
+                }`}
             >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                {loading ? 'Processing...' : 'Submit Order'}
+                {loading ? 'Processing...' : summary.totalWeight < 100 ? `Add ${(100 - summary.totalWeight).toFixed(1)} kg` : summary.items.some(item => item.quantity < 10) ? 'Fix Products (< 10kg)' : 'Submit Order'}
             </button>
         </div>
       </div>
