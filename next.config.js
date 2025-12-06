@@ -9,7 +9,7 @@ const nextConfig = {
   },
   // Environment variables that should be available on the client side
   env: {
-    NEXT_PUBLIC_APP_NAME: 'Kerala Fresh Fish',
+    NEXT_PUBLIC_APP_NAME: 'Shore to Door',
   },
 };
 

@@ -1,4 +1,4 @@
-# Kerala Fresh Fish - B2B Wholesale Ordering System
+# Shore to Door - B2B Wholesale Ordering System
 
 A Next.js-based wholesale fish ordering application with integrated backend services for Airtable, Email notifications, and WhatsApp Business messaging.
 

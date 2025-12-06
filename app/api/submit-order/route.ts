@@ -192,7 +192,7 @@ export async function POST(request: Request) {
                     <!-- Header -->
                     <tr>
                         <td style="background-color: #ffffff; padding: 20px; text-align: center; border-bottom: 3px solid #0066cc;">
-                            <img src="cid:logo" alt="Kerala Fresh Fish" style="width: 150px; height: auto;" />
+                            <img src="cid:logo" alt="Shore to Door" style="width: 150px; height: auto;" />
                         </td>
                     </tr>
                     
@@ -317,10 +317,10 @@ export async function POST(request: Request) {
                     <!-- Footer -->
                     <tr>
                         <td style="background-color: #343a40; padding: 30px 40px; text-align: center;">
-                            <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 15px; font-weight: 600;">Kerala Fresh Fish</p>
+                            <p style="margin: 0 0 8px 0; color: #ffffff; font-size: 15px; font-weight: 600;">Shore to Door</p>
                             <p style="margin: 0 0 15px 0; color: #adb5bd; font-size: 13px;">Premium Wholesale Seafood Supplier</p>
                             <p style="margin: 0; color: #6c757d; font-size: 12px; line-height: 1.5;">
-                                © ${new Date().getFullYear()} Kerala Fresh Fish. All rights reserved.<br>
+                                © ${new Date().getFullYear()} Shore to Door. All rights reserved.<br>
                                 This is an automated message. Please do not reply to this email.
                             </p>
                         </td>
@@ -357,7 +357,7 @@ export async function POST(request: Request) {
         console.log('✅ Invoice PDF generated:', invoiceNumber);
 
         await transporter.sendMail({
-            from: `"Kerala Fresh Fish Orders" <${process.env.SMTP_USER}>`,
+            from: `"Shore to Door Orders" <${process.env.SMTP_USER}>`,
             to: customer.email, // Send to buyer
             bcc: process.env.SMTP_USER, // Send copy to seller
             subject: `🐟 Order Confirmation #${orderRecordId.slice(-8)} - ${customer.companyName}`,

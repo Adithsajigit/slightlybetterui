@@ -47,7 +47,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     // Header - Company Info
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
-    doc.text('Kerala Fresh Fish', 20, yPos);
+    doc.text('Shore to Door', 20, yPos);
     yPos += 7;
     
     doc.setFontSize(10);
@@ -190,7 +190,7 @@ export async function generateInvoicePDF(data: InvoiceData): Promise<Buffer> {
     
     doc.setFontSize(9);
     doc.setTextColor(117, 117, 117);
-    doc.text('Kerala Fresh Fish | Premium Wholesale Seafood Supplier', 105, 275, { align: 'center' });
+    doc.text('Shore to Door | Premium Wholesale Seafood Supplier', 105, 275, { align: 'center' });
     doc.text('Thank you for your business!', 105, 280, { align: 'center' });
 
     // Convert to buffer

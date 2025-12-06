@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Kerala Fresh Fish - Wholesale Ordering",
+  title: "Shore to Door - Wholesale Ordering",
   description: "B2B Wholesale Fish Ordering System",
 };
 

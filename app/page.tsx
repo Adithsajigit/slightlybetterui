@@ -14,13 +14,13 @@ const FormHeader = () => {
       <div className="max-w-5xl mx-auto flex items-center gap-6">
         <img 
           src="/logo.png" 
-          alt="Kerala Fresh Fish Logo" 
+          alt="Shore to Door Logo" 
           className="h-32 w-32 object-contain"
           style={{ backgroundColor: 'white' }}
         />
         <div className="flex-1">
           <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tight">
-            Kerala Fresh Fish
+            Shore to Door
           </h1>
           <p className="text-slate-600 text-lg mt-1">
             Premium Wholesale B2B Fish Ordering

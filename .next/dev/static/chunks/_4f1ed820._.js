@@ -1315,7 +1315,6 @@ const ProductCard = ({ product })=>{
                 return product.priceSilver; // Default/Start price
         }
     };
-    0;
     const price = getCurrentPrice();
     const formatPrice = (p)=>new Intl.NumberFormat('en-GB', {
             style: 'currency',
@@ -2816,7 +2815,7 @@ const FormHeader = ()=>{
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
                     src: "/logo.png",
-                    alt: "Kerala Fresh Fish Logo",
+                    alt: "Shore to Door Logo",
                     className: "h-32 w-32 object-contain",
                     style: {
                         backgroundColor: 'white'
@@ -2831,7 +2830,7 @@ const FormHeader = ()=>{
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
                             className: "text-4xl font-black text-slate-900 uppercase tracking-tight",
-                            children: "Kerala Fresh Fish"
+                            children: "Shore to Door"
                         }, void 0, false, {
                             fileName: "[project]/app/page.tsx",
                             lineNumber: 22,
